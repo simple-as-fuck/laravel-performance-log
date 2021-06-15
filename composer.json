@@ -1,0 +1,10 @@
+{
+    "name": "simple-as-fuck/laravel-performance-log",
+    "require": {
+        "php": "^7.4|^8.0"
+    },
+    "require-dev": {
+        "phpstan/phpstan": "^0.12.89",
+        "friendsofphp/php-cs-fixer": "^3.0"
+    }
+}
