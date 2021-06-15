@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-return \PhpCsFixer\Config::create()
+return (new \PhpCsFixer\Config())
     ->setRules([
         '@PSR12' => true,
         '@PSR1' => true,
