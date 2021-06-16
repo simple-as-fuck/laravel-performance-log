@@ -1,7 +1,12 @@
 {
     "name": "simple-as-fuck/laravel-performance-log",
     "require": {
-        "php": "^7.4|^8.0"
+        "php": "^7.4|^8.0",
+        "illuminate/support": "^8.46",
+        "illuminate/database": "^8.46",
+        "illuminate/contracts": "^8.46",
+        "illuminate/log": "^8.47",
+        "illuminate/http": "^8.47"
     },
     "require-dev": {
         "phpstan/phpstan": "^0.12.89",
