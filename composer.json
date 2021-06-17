@@ -1,5 +1,6 @@
 {
     "name": "simple-as-fuck/laravel-performance-log",
+    "description": "Laravel service for logging slow parts of application.",
     "require": {
         "php": "^7.4|^8.0",
         "illuminate/support": "^8.46",
@@ -11,6 +12,9 @@
     "require-dev": {
         "phpstan/phpstan": "^0.12.89",
         "friendsofphp/php-cs-fixer": "^3.0"
+    },
+    "suggest": {
+        "sentry/sentry-laravel": "Allows receive logs with performance warning and make statistic on them, send notification, ..."
     },
     "autoload": {
         "psr-4": {"SimpleAsFuck\\LaravelPerformanceLog\\": "src/"}
