@@ -3,11 +3,11 @@
     "description": "Laravel service for logging slow parts of application.",
     "require": {
         "php": "^7.4|^8.0",
-        "illuminate/support": "^8.46",
-        "illuminate/database": "^8.46",
-        "illuminate/contracts": "^8.46",
-        "illuminate/log": "^8.47",
-        "illuminate/http": "^8.47"
+        "illuminate/support": "^8.0",
+        "illuminate/database": "^8.0",
+        "illuminate/contracts": "^8.0",
+        "illuminate/log": "^8.0",
+        "illuminate/http": "^8.0"
     },
     "require-dev": {
         "phpstan/phpstan": "^0.12.89",
