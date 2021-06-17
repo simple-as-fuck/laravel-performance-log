@@ -27,10 +27,10 @@ final class PerformanceMiddleware
      * @param Request $request
      * @return Response
      */
-    public function handle($request, \Closure $next)
+    public function handle($request, \Closure $next, float $threshold = null)
     {
-        $requestThreshold = $this->config->get('app.performance.http.slow_request_threshold');
-        if ($requestThreshold === null) {
+        $threshold ??= $this->config->get('app.performance.http.slow_request_threshold');
+        if ($threshold === null) {
             return $next($request);
         }
 
@@ -39,12 +39,12 @@ final class PerformanceMiddleware
         $response = $next($request);
 
         $logger = $this->logManager->channel($this->config->get('app.performance.log_channel'));
-        if ($requestThreshold === 0 && $this->config->get('app.debug')) {
-            $time = $this->stopwatch->check($measurement, $requestThreshold);
+        if ($threshold === 0 && $this->config->get('app.debug')) {
+            $time = $this->stopwatch->check($measurement, $threshold);
             $logger->debug('Http request: "'.$request->method().'" "'.$request->fullUrl().'" time: '.$time.'ms');
             return $response;
         }
-        $this->stopwatch->check($measurement, $requestThreshold, fn (float $time) => $logger->warning('Http request: "'.$request->method().'" "'.$request->fullUrl().'" is to slow: '.$time.'ms threshold: '.$requestThreshold.'ms'));
+        $this->stopwatch->check($measurement, $threshold, fn (float $time) => $logger->warning('Http request: "'.$request->method().'" "'.$request->fullUrl().'" is to slow: '.$time.'ms threshold: '.$threshold.'ms'));
 
         return $response;
     }
