@@ -39,7 +39,7 @@ final class PerformanceMiddleware
         $response = $next($request);
 
         $logger = $this->logManager->channel($this->config->get('app.performance.log_channel'));
-        if ($threshold === 0 && $this->config->get('app.debug')) {
+        if ($threshold == 0 && $this->config->get('app.debug')) {
             $time = $this->stopwatch->check($measurement, $threshold);
             $logger->debug('Http request: "'.$request->method().'" "'.$request->fullUrl().'" time: '.$time.'ms');
             return $response;

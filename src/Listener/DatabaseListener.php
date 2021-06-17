@@ -38,8 +38,8 @@ class DatabaseListener
 
         $logger = $this->logManager->channel($this->config->get('app.performance.log_channel'));
 
-        if ($queryThreshold === 0 && $this->config->get('app.debug')) {
-            $logger->debug('Database query: "'.$query->sql.'" time: '.$query->time.'ms');
+        if ($queryThreshold == 0 && $this->config->get('app.debug')) {
+            $logger->debug('Database query: "'.$query->sql.'" time: '.$query->time.'ms connection: "'.$query->connectionName.'"');
             return;
         }
 
@@ -55,7 +55,7 @@ class DatabaseListener
             return;
         }
 
-        if ($transactionThreshold === 0 && $this->config->get('app.debug')) {
+        if ($transactionThreshold == 0 && $this->config->get('app.debug')) {
             $logger = $this->logManager->channel($this->config->get('app.performance.log_channel'));
             $logger->debug('Database transaction begin connection: "'.$transactionBeginning->connectionName.'"');
         }
@@ -77,7 +77,7 @@ class DatabaseListener
             return;
         }
 
-        if ($transactionThreshold === 0 && $this->config->get('app.debug')) {
+        if ($transactionThreshold == 0 && $this->config->get('app.debug')) {
             $time = $this->stopwatch->checkPrefix($this->transactionMeasurement, $transactionThreshold, $transactionCommitted->connectionName);
             $logger->debug('Database transaction commit time: '.$time.'ms connection: "'.$transactionCommitted->connectionName.'"');
             return;
