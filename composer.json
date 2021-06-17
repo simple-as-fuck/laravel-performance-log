@@ -18,5 +18,12 @@
     },
     "autoload": {
         "psr-4": {"SimpleAsFuck\\LaravelPerformanceLog\\": "src/"}
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "SimpleAsFuck\\LaravelPerformanceLog\\Provider\\PackageProvider"
+            ]
+        }
     }
 }
