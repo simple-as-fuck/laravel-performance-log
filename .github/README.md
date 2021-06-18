@@ -10,25 +10,8 @@ composer require simple-as-fuck/laravel-performance-log
 
 ## Configuration
 
-Add this into your laravel application: `config/app.php`. 
-
-```php
-    'performance' => [
-        // configure name of log chanel defined in config/logging.php used for logging
-        // with null value default log chanel will be used 
-        'log_channel' => null,
-        // thresholds definitions, if anything run longer than threshold service will log warning
-        // all thresholds are float value in milliseconds
-        // null threshold will turn off any measurring
-        // threshold zero value with 'app.debug' true value will log running time for anything as debug
-        'database' => [
-            'slow_query_threshold' => 50,
-            'slow_transaction_threshold' => 300,
-        ],
-        'http' => [
-            'slow_request_threshold' => 1000,
-        ],
-    ],
+```console
+php artisan vendor:publish --tag performance-log-config
 ```
 
 ## Http middleware usage
@@ -44,7 +27,7 @@ and put `PerformanceMiddleware` on **first position**.
 
 With group usage you can turn on measuring only on some routes or
 configure different thresholds on different route groups by [middleware parameter](https://laravel.com/docs/middleware#middleware-parameters)
-`threshold` float value in milliseconds, middleware parameter overwrite `'app.performance.http.slow_request_threshold'` config value.
+`threshold` float value in milliseconds, middleware parameter overwrite `'performance_log.http.slow_request_threshold'` config value.
 
 ## Usage with monitoring
 

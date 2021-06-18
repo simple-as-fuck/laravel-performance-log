@@ -20,6 +20,11 @@ class PackageProvider extends ServiceProvider
 
     public function boot(): void
     {
+        $this->mergeConfigFrom(__DIR__.'../../config/performance_log.php', 'performance_log');
+        $this->publishes([
+            __DIR__.'../../config/performance_log.php' => $this->app->configPath('performance_log.php'),
+        ], 'performance-log-config');
+
         /** @var DatabaseManager $databaseManager */
         $databaseManager = $this->app->make(DatabaseManager::class);
         $databaseDispatcher = $databaseManager->getEventDispatcher();

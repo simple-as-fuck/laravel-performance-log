@@ -31,12 +31,12 @@ class DatabaseListener
 
     public function onSqlQuery(QueryExecuted $query): void
     {
-        $queryThreshold = $this->config->get('app.performance.database.slow_query_threshold');
+        $queryThreshold = $this->config->get('performance_log.database.slow_query_threshold');
         if ($queryThreshold === null) {
             return;
         }
 
-        $logger = $this->logManager->channel($this->config->get('app.performance.log_channel'));
+        $logger = $this->logManager->channel($this->config->get('performance_log.log_channel'));
 
         if ($queryThreshold == 0 && $this->config->get('app.debug')) {
             $logger->debug('Database query: "'.$query->sql.'" time: '.$query->time.'ms connection: "'.$query->connectionName.'"');
@@ -50,13 +50,13 @@ class DatabaseListener
 
     public function onTransactionBegin(TransactionBeginning $transactionBeginning): void
     {
-        $transactionThreshold = $this->config->get('app.performance.database.slow_transaction_threshold');
+        $transactionThreshold = $this->config->get('performance_log.database.slow_transaction_threshold');
         if ($transactionThreshold === null) {
             return;
         }
 
         if ($transactionThreshold == 0 && $this->config->get('app.debug')) {
-            $logger = $this->logManager->channel($this->config->get('app.performance.log_channel'));
+            $logger = $this->logManager->channel($this->config->get('performance_log.log_channel'));
             $logger->debug('Database transaction begin connection: "'.$transactionBeginning->connectionName.'"');
         }
 
@@ -65,12 +65,12 @@ class DatabaseListener
 
     public function onTransactionCommit(TransactionCommitted $transactionCommitted): void
     {
-        $transactionThreshold = $this->config->get('app.performance.database.slow_transaction_threshold');
+        $transactionThreshold = $this->config->get('performance_log.database.slow_transaction_threshold');
         if ($transactionThreshold === null) {
             return;
         }
 
-        $logger = $this->logManager->channel($this->config->get('app.performance.log_channel'));
+        $logger = $this->logManager->channel($this->config->get('performance_log.log_channel'));
 
         if (! $this->transactionMeasurement->running($transactionCommitted->connectionName)) {
             $logger->error('Database transaction measurement not running database connection: "'.$transactionCommitted->connectionName.'", check if begin transaction is called before commit!');
