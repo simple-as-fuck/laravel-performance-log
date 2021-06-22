@@ -25,6 +25,8 @@ class PackageProvider extends ServiceProvider
             __DIR__.'/../../config/performance_log.php' => $this->app->configPath('performance_log.php'),
         ], 'performance-log-config');
 
+        $this->app->make('events');
+
         /** @var DatabaseManager $databaseManager */
         $databaseManager = $this->app->make(DatabaseManager::class);
         $databaseDispatcher = $databaseManager->getEventDispatcher();

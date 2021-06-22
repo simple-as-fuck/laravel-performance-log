@@ -7,7 +7,8 @@
         "illuminate/database": "^8.0",
         "illuminate/contracts": "^8.0",
         "illuminate/log": "^8.0",
-        "illuminate/http": "^8.0"
+        "illuminate/http": "^8.0",
+        "illuminate/events": "^8.0"
     },
     "require-dev": {
         "phpstan/phpstan": "^0.12.89",
