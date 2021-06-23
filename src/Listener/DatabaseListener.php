@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace SimpleAsFuck\LaravelPerformanceLog\Listener;
 
 use Illuminate\Contracts\Config\Repository;
+use Illuminate\Database\Events\MigrationsEnded;
+use Illuminate\Database\Events\MigrationsStarted;
 use Illuminate\Database\Events\QueryExecuted;
 use Illuminate\Database\Events\TransactionBeginning;
 use Illuminate\Database\Events\TransactionCommitted;
@@ -19,6 +21,7 @@ class DatabaseListener
     private Stopwatch $stopwatch;
 
     private Measurement $transactionMeasurement;
+    private bool $migrationsRunning;
 
     public function __construct(Repository $config, LogManager $logManager, Stopwatch $stopwatch)
     {
@@ -27,11 +30,12 @@ class DatabaseListener
         $this->stopwatch = $stopwatch;
 
         $this->transactionMeasurement = new Measurement();
+        $this->migrationsRunning = false;
     }
 
     public function onSqlQuery(QueryExecuted $query): void
     {
-        $queryThreshold = $this->config->get('performance_log.database.slow_query_threshold');
+        $queryThreshold = $this->config->get($this->migrationsRunning ? 'performance_log.migration.slow_query_threshold' : 'performance_log.database.slow_query_threshold');
         if ($queryThreshold === null) {
             return;
         }
@@ -89,5 +93,15 @@ class DatabaseListener
             $transactionCommitted->connectionName,
             fn (float $time) => $logger->warning('Database transaction is to slow: '.$time.'ms threshold: '.$transactionThreshold. 'ms connection: "'.$transactionCommitted->connectionName.'"')
         );
+    }
+
+    public function onMigrationsStart(MigrationsStarted $migrationsStarted): void
+    {
+        $this->migrationsRunning = true;
+    }
+
+    public function onMigrationsEnd(MigrationsEnded $migrationsEnded): void
+    {
+        $this->migrationsRunning = false;
     }
 }
