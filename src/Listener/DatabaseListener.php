@@ -54,6 +54,10 @@ class DatabaseListener
 
     public function onTransactionBegin(TransactionBeginning $transactionBeginning): void
     {
+        if ($transactionBeginning->connection->transactionLevel() !== 1) {
+            return;
+        }
+
         $transactionThreshold = $this->config->get('performance_log.database.slow_transaction_threshold');
         if ($transactionThreshold === null) {
             return;
@@ -69,6 +73,10 @@ class DatabaseListener
 
     public function onTransactionCommit(TransactionCommitted $transactionCommitted): void
     {
+        if ($transactionCommitted->connection->transactionLevel() !== 0) {
+            return;
+        }
+
         $transactionThreshold = $this->config->get('performance_log.database.slow_transaction_threshold');
         if ($transactionThreshold === null) {
             return;
