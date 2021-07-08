@@ -43,12 +43,12 @@ class DatabaseListener
         $logger = $this->logManager->channel($this->config->get('performance_log.log_channel'));
 
         if ($queryThreshold == 0 && $this->config->get('app.debug')) {
-            $logger->debug('Database query: "'.$query->sql.'" time: '.$query->time.'ms connection: "'.$query->connectionName.'"');
+            $logger->debug('Database query time: '.$query->time.'ms sql: "'.$query->sql.'" connection: "'.$query->connectionName.'"');
             return;
         }
 
         if ($query->time >= $queryThreshold) {
-            $logger->warning('Database query: "'.$query->sql.'" is to slow: '.$query->time.'ms threshold: '.$queryThreshold. 'ms connection: "'.$query->connectionName.'"');
+            $logger->warning('Database query is to slow: '.$query->time.'ms sql: "'.$query->sql.'" threshold: '.$queryThreshold. 'ms connection: "'.$query->connectionName.'"');
         }
     }
 

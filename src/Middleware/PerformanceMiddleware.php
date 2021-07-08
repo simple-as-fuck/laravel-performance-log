@@ -41,10 +41,10 @@ final class PerformanceMiddleware
         $logger = $this->logManager->channel($this->config->get('performance_log.log_channel'));
         if ($threshold == 0 && $this->config->get('app.debug')) {
             $time = $this->stopwatch->check($measurement, $threshold);
-            $logger->debug('Http request: "'.$request->method().'" "'.$request->fullUrl().'" time: '.$time.'ms');
+            $logger->debug('Http request time: '.$time.'ms method: "'.$request->method().'" url: "'.$request->fullUrl().'"');
             return $response;
         }
-        $this->stopwatch->check($measurement, $threshold, fn (float $time) => $logger->warning('Http request: "'.$request->method().'" "'.$request->fullUrl().'" is to slow: '.$time.'ms threshold: '.$threshold.'ms'));
+        $this->stopwatch->check($measurement, $threshold, fn (float $time) => $logger->warning('Http request is to slow: '.$time.'ms method: "'.$request->method().'" url: "'.$request->fullUrl().'" threshold: '.$threshold.'ms'));
 
         return $response;
     }
