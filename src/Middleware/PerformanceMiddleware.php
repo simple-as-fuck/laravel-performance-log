@@ -44,7 +44,7 @@ final class PerformanceMiddleware
             $logger->debug('Http request time: '.$time.'ms method: "'.$request->method().'" url: "'.$request->fullUrl().'"');
             return $response;
         }
-        $this->stopwatch->check($measurement, $threshold, fn (float $time) => $logger->warning('Http request is to slow: '.$time.'ms method: "'.$request->method().'" url: "'.$request->fullUrl().'" threshold: '.$threshold.'ms'));
+        $this->stopwatch->check($measurement, $threshold, fn (float $time) => $logger->warning('Http request is too slow: '.$time.'ms method: "'.$request->method().'" url: "'.$request->fullUrl().'" threshold: '.$threshold.'ms'));
 
         return $response;
     }

@@ -48,7 +48,7 @@ class DatabaseListener
         }
 
         if ($query->time >= $queryThreshold) {
-            $logger->warning('Database query is to slow: '.$query->time.'ms sql: "'.$query->sql.'" threshold: '.$queryThreshold. 'ms connection: "'.$query->connectionName.'"');
+            $logger->warning('Database query is too slow: '.$query->time.'ms sql: "'.$query->sql.'" threshold: '.$queryThreshold. 'ms connection: "'.$query->connectionName.'"');
         }
     }
 
@@ -99,7 +99,7 @@ class DatabaseListener
             $this->transactionMeasurement,
             $transactionThreshold,
             $transactionCommitted->connectionName,
-            fn (float $time) => $logger->warning('Database transaction is to slow: '.$time.'ms threshold: '.$transactionThreshold. 'ms connection: "'.$transactionCommitted->connectionName.'"')
+            fn (float $time) => $logger->warning('Database transaction is too slow: '.$time.'ms threshold: '.$transactionThreshold. 'ms connection: "'.$transactionCommitted->connectionName.'"')
         );
     }
 

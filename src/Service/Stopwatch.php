@@ -21,7 +21,7 @@ class Stopwatch
     }
 
     /**
-     * @param float $threshold threshold in milliseconds define to slow finish
+     * @param float $threshold threshold in milliseconds define too slow finish
      * @param callable|null $toSlowCallback what happened after slow finish
      * @return float measured time in milliseconds
      */
@@ -31,7 +31,7 @@ class Stopwatch
     }
 
     /**
-     * @param float $threshold threshold in milliseconds define to slow finish
+     * @param float $threshold threshold in milliseconds define too slow finish
      * @param callable|null $toSlowCallback what happened after slow finish
      * @return float measured time in milliseconds
      */
