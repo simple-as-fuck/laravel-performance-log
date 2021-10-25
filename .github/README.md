@@ -25,13 +25,33 @@ If you want register middleware on route group you must configure
 [middleware priority](https://laravel.com/docs/middleware#sorting-middleware)
 and put `PerformanceMiddleware` on **first position**.
 
+## Thresholds overwrite
+
+### Sql
+
+If you know than some sql is slow, and you are fine with that you can overwrite `'performance_log.database.slow_query_threshold'`
+by setting temporary threshold in `PerformanceLogConfig`.
+
+```php
+/** @var \SimpleAsFuck\LaravelPerformanceLog\Service\PerformanceLogConfig $config */
+$config = app()->make(\SimpleAsFuck\LaravelPerformanceLog\Service\PerformanceLogConfig::class);
+
+$threshold = $config->setSlowSqlQueryThreshold(null);
+
+// run some slow queries without annoying performance log
+
+$threshold->restore();
+```
+
+### Http
+
 With group usage you can turn on measuring only on some routes or
-configure different thresholds on different route groups by [middleware parameter](https://laravel.com/docs/middleware#middleware-parameters)
+configure different thresholds on different route by [middleware parameter](https://laravel.com/docs/middleware#middleware-parameters)
 `threshold` float value in milliseconds, middleware parameter overwrite `'performance_log.http.slow_request_threshold'` config value.
 
 ## Usage with monitoring
 
-Is recommended send performance warning logs into you monitoring system, so you know what is slow.
+Is recommended send performance warning logs into your monitoring system, so you know what is slow.
 
 For simple monitoring is [laravel sentry](https://docs.sentry.io/platforms/php/guides/laravel/) integration.
 Sentry integration can collect information about request or command with stacktrace,

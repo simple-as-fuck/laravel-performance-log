@@ -17,10 +17,6 @@ return [
         // define threshold for one database transaction
         'slow_transaction_threshold' => 300,
     ],
-    'migration' => [
-        // define threshold for single database query executed in migrations
-        'slow_query_threshold' => 150,
-    ],
     'http' => [
         // define threshold for whole http request
         'slow_request_threshold' => 1000,

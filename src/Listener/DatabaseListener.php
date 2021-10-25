@@ -5,13 +5,12 @@ declare(strict_types=1);
 namespace SimpleAsFuck\LaravelPerformanceLog\Listener;
 
 use Illuminate\Contracts\Config\Repository;
-use Illuminate\Database\Events\MigrationsEnded;
-use Illuminate\Database\Events\MigrationsStarted;
 use Illuminate\Database\Events\QueryExecuted;
 use Illuminate\Database\Events\TransactionBeginning;
 use Illuminate\Database\Events\TransactionCommitted;
 use Illuminate\Log\LogManager;
 use SimpleAsFuck\LaravelPerformanceLog\Model\Measurement;
+use SimpleAsFuck\LaravelPerformanceLog\Service\PerformanceLogConfig;
 use SimpleAsFuck\LaravelPerformanceLog\Service\Stopwatch;
 
 class DatabaseListener
@@ -19,30 +18,30 @@ class DatabaseListener
     private Repository $config;
     private LogManager $logManager;
     private Stopwatch $stopwatch;
+    private PerformanceLogConfig $performanceLogConfig;
 
     private Measurement $transactionMeasurement;
-    private bool $migrationsRunning;
 
-    public function __construct(Repository $config, LogManager $logManager, Stopwatch $stopwatch)
+    public function __construct(Repository $config, LogManager $logManager, Stopwatch $stopwatch, PerformanceLogConfig $performanceLogConfig)
     {
         $this->config = $config;
         $this->logManager = $logManager;
         $this->stopwatch = $stopwatch;
+        $this->performanceLogConfig = $performanceLogConfig;
 
         $this->transactionMeasurement = new Measurement();
-        $this->migrationsRunning = false;
     }
 
     public function onSqlQuery(QueryExecuted $query): void
     {
-        $queryThreshold = $this->config->get($this->migrationsRunning ? 'performance_log.migration.slow_query_threshold' : 'performance_log.database.slow_query_threshold');
+        $queryThreshold = $this->performanceLogConfig->getSlowSqlQueryThreshold();
         if ($queryThreshold === null) {
             return;
         }
 
         $logger = $this->logManager->channel($this->config->get('performance_log.log_channel'));
 
-        if ($queryThreshold == 0 && $this->config->get('app.debug')) {
+        if ($queryThreshold === 0.0 && $this->config->get('app.debug')) {
             $logger->debug('Database query time: '.$query->time.'ms sql: "'.$query->sql.'" connection: "'.$query->connectionName.'"');
             return;
         }
@@ -101,15 +100,5 @@ class DatabaseListener
             $transactionCommitted->connectionName,
             fn (float $time) => $logger->warning('Database transaction is too slow: '.$time.'ms threshold: '.$transactionThreshold. 'ms connection: "'.$transactionCommitted->connectionName.'"')
         );
-    }
-
-    public function onMigrationsStart(MigrationsStarted $migrationsStarted): void
-    {
-        $this->migrationsRunning = true;
-    }
-
-    public function onMigrationsEnd(MigrationsEnded $migrationsEnded): void
-    {
-        $this->migrationsRunning = false;
     }
 }

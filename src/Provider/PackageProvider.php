@@ -5,18 +5,18 @@ declare(strict_types=1);
 namespace SimpleAsFuck\LaravelPerformanceLog\Provider;
 
 use Illuminate\Database\DatabaseManager;
-use Illuminate\Database\Events\MigrationsEnded;
-use Illuminate\Database\Events\MigrationsStarted;
 use Illuminate\Database\Events\QueryExecuted;
 use Illuminate\Database\Events\TransactionBeginning;
 use Illuminate\Database\Events\TransactionCommitted;
 use Illuminate\Support\ServiceProvider;
 use SimpleAsFuck\LaravelPerformanceLog\Listener\DatabaseListener;
+use SimpleAsFuck\LaravelPerformanceLog\Service\PerformanceLogConfig;
 
 class PackageProvider extends ServiceProvider
 {
     public function register()
     {
+        $this->app->singleton(PerformanceLogConfig::class);
         $this->app->singleton(DatabaseListener::class);
     }
 
@@ -37,7 +37,5 @@ class PackageProvider extends ServiceProvider
         $databaseDispatcher->listen(QueryExecuted::class, [$databaseListener, 'onSqlQuery']);
         $databaseDispatcher->listen(TransactionBeginning::class, [$databaseListener, 'onTransactionBegin']);
         $databaseDispatcher->listen(TransactionCommitted::class, [$databaseListener, 'onTransactionCommit']);
-        $databaseDispatcher->listen(MigrationsStarted::class, [$databaseListener, 'onMigrationsStart']);
-        $databaseDispatcher->listen(MigrationsEnded::class, [$databaseListener, 'onMigrationsEnd']);
     }
 }
