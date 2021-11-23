@@ -12,6 +12,7 @@ use Illuminate\Log\LogManager;
 use SimpleAsFuck\LaravelPerformanceLog\Model\Measurement;
 use SimpleAsFuck\LaravelPerformanceLog\Service\PerformanceLogConfig;
 use SimpleAsFuck\LaravelPerformanceLog\Service\Stopwatch;
+use SimpleAsFuck\Validator\Factory\Validator;
 
 class DatabaseListener
 {
@@ -39,7 +40,7 @@ class DatabaseListener
             return;
         }
 
-        $logger = $this->logManager->channel($this->config->get('performance_log.log_channel'));
+        $logger = $this->logManager->channel(Validator::make($this->config->get('performance_log.log_channel'))->string()->nullable());
 
         if ($queryThreshold === 0.0 && $this->config->get('app.debug')) {
             $logger->debug('Database query time: '.$query->time.'ms sql: "'.$query->sql.'" connection: "'.$query->connectionName.'"');
@@ -63,7 +64,7 @@ class DatabaseListener
         }
 
         if ($transactionThreshold == 0 && $this->config->get('app.debug')) {
-            $logger = $this->logManager->channel($this->config->get('performance_log.log_channel'));
+            $logger = $this->logManager->channel(Validator::make($this->config->get('performance_log.log_channel'))->string()->nullable());
             $logger->debug('Database transaction begin connection: "'.$transactionBeginning->connectionName.'"');
         }
 
@@ -76,12 +77,12 @@ class DatabaseListener
             return;
         }
 
-        $transactionThreshold = $this->config->get('performance_log.database.slow_transaction_threshold');
+        $transactionThreshold = Validator::make($this->config->get('performance_log.database.slow_transaction_threshold'))->float()->min(0)->nullable();
         if ($transactionThreshold === null) {
             return;
         }
 
-        $logger = $this->logManager->channel($this->config->get('performance_log.log_channel'));
+        $logger = $this->logManager->channel(Validator::make($this->config->get('performance_log.log_channel'))->string()->nullable());
 
         if (! $this->transactionMeasurement->running($transactionCommitted->connectionName)) {
             $logger->error('Database transaction measurement not running database connection: "'.$transactionCommitted->connectionName.'", check if begin transaction is called before commit!');

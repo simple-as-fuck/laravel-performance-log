@@ -6,6 +6,7 @@ namespace SimpleAsFuck\LaravelPerformanceLog\Service;
 
 use Illuminate\Contracts\Config\Repository;
 use SimpleAsFuck\LaravelPerformanceLog\Model\TemporaryThreshold;
+use SimpleAsFuck\Validator\Factory\Validator;
 
 class PerformanceLogConfig
 {
@@ -26,7 +27,7 @@ class PerformanceLogConfig
             return $temporaryThreshold->getValue();
         }
 
-        return $this->config->get('performance_log.database.slow_query_threshold');
+        return Validator::make($this->config->get('performance_log.database.slow_query_threshold'))->float()->min(0)->nullable();
     }
 
     public function setSlowSqlQueryThreshold(?float $threshold): TemporaryThreshold

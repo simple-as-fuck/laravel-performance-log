@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Log\LogManager;
 use SimpleAsFuck\LaravelPerformanceLog\Service\Stopwatch;
+use SimpleAsFuck\Validator\Factory\Validator;
 
 final class PerformanceMiddleware
 {
@@ -29,7 +30,7 @@ final class PerformanceMiddleware
      */
     public function handle($request, \Closure $next, float $threshold = null)
     {
-        $threshold ??= $this->config->get('performance_log.http.slow_request_threshold');
+        $threshold ??= Validator::make($this->config->get('performance_log.http.slow_request_threshold'))->float()->min(0)->nullable();
         if ($threshold === null) {
             return $next($request);
         }
@@ -38,7 +39,7 @@ final class PerformanceMiddleware
 
         $response = $next($request);
 
-        $logger = $this->logManager->channel($this->config->get('performance_log.log_channel'));
+        $logger = $this->logManager->channel(Validator::make($this->config->get('performance_log.log_channel'))->string()->nullable());
         if ($threshold == 0 && $this->config->get('app.debug')) {
             $time = $this->stopwatch->check($measurement, $threshold);
             $logger->debug('Http request time: '.$time.'ms method: "'.$request->method().'" url: "'.$request->fullUrl().'"');

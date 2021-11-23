@@ -8,11 +8,12 @@
         "illuminate/contracts": "^8.0",
         "illuminate/log": "^8.0",
         "illuminate/http": "^8.0",
-        "illuminate/events": "^8.0"
+        "illuminate/events": "^8.0",
+        "simple-as-fuck/php-validator": "^0.1.0"
     },
     "require-dev": {
-        "phpstan/phpstan": "^0.12.89",
-        "friendsofphp/php-cs-fixer": "^3.0"
+        "friendsofphp/php-cs-fixer": "^3.0",
+        "phpstan/phpstan": "^1.2"
     },
     "suggest": {
         "sentry/sentry-laravel": "Allows receive logs with performance warning and make statistic on them, send notification, ..."
