@@ -6,6 +6,7 @@ return (new \PhpCsFixer\Config())
     ->setRules([
         '@PSR12' => true,
         '@PSR1' => true,
+        'no_unused_imports' => true,
     ])
     ->setFinder(
         \PhpCsFixer\Finder::create()
