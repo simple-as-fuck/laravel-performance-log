@@ -43,12 +43,12 @@ class DatabaseListener
         $logger = $this->logManager->channel(Validator::make($this->config->get('performance_log.log_channel'))->string()->nullable());
 
         if ($queryThreshold === 0.0 && $this->config->get('app.debug')) {
-            $logger->debug('Database query time: '.$query->time.'ms sql: "'.$query->sql.'" connection: "'.$query->connectionName.'"');
+            $logger->debug('Database query time: '.$query->time.'ms sql: "'.$query->sql.'" connection: "'.$query->connectionName.'" pid: '.\getmypid());
             return;
         }
 
         if ($query->time >= $queryThreshold) {
-            $logger->warning('Database query is too slow: '.$query->time.'ms sql: "'.$query->sql.'" threshold: '.$queryThreshold. 'ms connection: "'.$query->connectionName.'"');
+            $logger->warning('Database query is too slow: '.$query->time.'ms sql: "'.$query->sql.'" threshold: '.$queryThreshold. 'ms connection: "'.$query->connectionName.'" pid: '.\getmypid());
         }
     }
 
@@ -65,7 +65,7 @@ class DatabaseListener
 
         if ($transactionThreshold == 0 && $this->config->get('app.debug')) {
             $logger = $this->logManager->channel(Validator::make($this->config->get('performance_log.log_channel'))->string()->nullable());
-            $logger->debug('Database transaction begin connection: "'.$transactionBeginning->connectionName.'"');
+            $logger->debug('Database transaction begin connection: "'.$transactionBeginning->connectionName.'" pid: '.\getmypid());
         }
 
         $this->stopwatch->start($this->transactionMeasurement, $transactionBeginning->connectionName);
@@ -85,13 +85,13 @@ class DatabaseListener
         $logger = $this->logManager->channel(Validator::make($this->config->get('performance_log.log_channel'))->string()->nullable());
 
         if (! $this->transactionMeasurement->running($transactionCommitted->connectionName)) {
-            $logger->error('Database transaction measurement not running database connection: "'.$transactionCommitted->connectionName.'", check if begin transaction is called before commit!');
+            $logger->error('Database transaction measurement not running database connection: "'.$transactionCommitted->connectionName.'" pid: '.\getmypid().', check if begin transaction is called before commit!');
             return;
         }
 
         if ($transactionThreshold == 0 && $this->config->get('app.debug')) {
             $time = $this->stopwatch->checkPrefix($this->transactionMeasurement, $transactionThreshold, $transactionCommitted->connectionName);
-            $logger->debug('Database transaction commit time: '.$time.'ms connection: "'.$transactionCommitted->connectionName.'"');
+            $logger->debug('Database transaction commit time: '.$time.'ms connection: "'.$transactionCommitted->connectionName.'" pid: '.\getmypid());
             return;
         }
 
@@ -99,7 +99,7 @@ class DatabaseListener
             $this->transactionMeasurement,
             $transactionThreshold,
             $transactionCommitted->connectionName,
-            fn (float $time) => $logger->warning('Database transaction is too slow: '.$time.'ms threshold: '.$transactionThreshold. 'ms connection: "'.$transactionCommitted->connectionName.'"')
+            fn (float $time) => $logger->warning('Database transaction is too slow: '.$time.'ms threshold: '.$transactionThreshold. 'ms connection: "'.$transactionCommitted->connectionName.'" pid: '.\getmypid())
         );
     }
 }
