@@ -20,6 +20,9 @@ class PerformanceLogConfig
         $this->temporarySqlQueryThreshold = null;
     }
 
+    /**
+     * @return float|null threshold value in milliseconds
+     */
     public function getSlowSqlQueryThreshold(): ?float
     {
         $temporaryThreshold = self::getTemporaryThreshold($this->temporarySqlQueryThreshold);
@@ -30,6 +33,9 @@ class PerformanceLogConfig
         return Validator::make($this->config->get('performance_log.database.slow_query_threshold'))->float()->min(0)->nullable();
     }
 
+    /**
+     * @param float|null $threshold threshold value in milliseconds
+     */
     public function setSlowSqlQueryThreshold(?float $threshold): TemporaryThreshold
     {
         $temporaryThreshold = self::getTemporaryThreshold($this->temporarySqlQueryThreshold);

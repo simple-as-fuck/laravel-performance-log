@@ -15,6 +15,9 @@ final class TemporaryThreshold
         $this->original = $original;
     }
 
+    /**
+     * @return float|null threshold value in milliseconds
+     */
     public function getValue(): ?float
     {
         return $this->value;
