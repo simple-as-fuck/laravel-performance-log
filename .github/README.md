@@ -14,6 +14,13 @@ composer require simple-as-fuck/laravel-performance-log
 php artisan vendor:publish --tag performance-log-config
 ```
 
+## Support
+
+If any PHP platform requirements in [composer.json](../composer.json) ends with security support,
+consider package version as unsupported except last version.
+
+[PHP supported versions](https://www.php.net/supported-versions.php).
+
 ## Http middleware usage
 
 For http request time logging you must register `PerformanceMiddleware`.
