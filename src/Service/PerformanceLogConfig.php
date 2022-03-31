@@ -26,7 +26,7 @@ class PerformanceLogConfig
     public function getSlowSqlQueryThreshold(): ?float
     {
         $temporaryThreshold = self::getTemporaryThreshold($this->temporarySqlQueryThreshold);
-        if ($temporaryThreshold) {
+        if ($temporaryThreshold !== null) {
             return $temporaryThreshold->getValue();
         }
 
@@ -39,7 +39,7 @@ class PerformanceLogConfig
     public function setSlowSqlQueryThreshold(?float $threshold): TemporaryThreshold
     {
         $temporaryThreshold = self::getTemporaryThreshold($this->temporarySqlQueryThreshold);
-        if ($temporaryThreshold) {
+        if ($temporaryThreshold !== null) {
             return new TemporaryThreshold($threshold, $temporaryThreshold->getValue());
         }
 

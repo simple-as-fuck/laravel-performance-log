@@ -40,7 +40,7 @@ final class PerformanceMiddleware
         $response = $next($request);
 
         $logger = $this->logManager->channel(Validator::make($this->config->get('performance_log.log_channel'))->string()->nullable());
-        if ($threshold == 0 && $this->config->get('app.debug')) {
+        if ($threshold == 0 && Validator::make($this->config->get('app.debug'))->bool()->notNull()) {
             $time = $this->stopwatch->check($measurement, $threshold);
             $logger->debug('Http request time: '.$time.'ms method: "'.$request->method().'" url: "'.$request->fullUrl().'" pid: '.\getmypid());
             return $response;

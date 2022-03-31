@@ -39,7 +39,7 @@ class Stopwatch
     {
         $time = $measurement->finish($prefix);
         if ($time >= $threshold) {
-            if ($toSlowCallback) {
+            if ($toSlowCallback !== null) {
                 $toSlowCallback($time);
             }
         }

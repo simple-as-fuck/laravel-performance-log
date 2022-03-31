@@ -42,7 +42,7 @@ class DatabaseListener
 
         $logger = $this->logManager->channel(Validator::make($this->config->get('performance_log.log_channel'))->string()->nullable());
 
-        if ($queryThreshold === 0.0 && $this->config->get('app.debug')) {
+        if ($queryThreshold === 0.0 && Validator::make($this->config->get('app.debug'))->bool()->notNull()) {
             $logger->debug('Database query time: '.$query->time.'ms sql: "'.$query->sql.'" connection: "'.$query->connectionName.'" pid: '.\getmypid());
             return;
         }
@@ -63,7 +63,7 @@ class DatabaseListener
             return;
         }
 
-        if ($transactionThreshold == 0 && $this->config->get('app.debug')) {
+        if ($transactionThreshold == 0 && Validator::make($this->config->get('app.debug'))->bool()->notNull()) {
             $logger = $this->logManager->channel(Validator::make($this->config->get('performance_log.log_channel'))->string()->nullable());
             $logger->debug('Database transaction begin connection: "'.$transactionBeginning->connectionName.'" pid: '.\getmypid());
         }
@@ -89,7 +89,7 @@ class DatabaseListener
             return;
         }
 
-        if ($transactionThreshold == 0 && $this->config->get('app.debug')) {
+        if ($transactionThreshold == 0 && Validator::make($this->config->get('app.debug'))->bool()->notNull()) {
             $time = $this->stopwatch->checkPrefix($this->transactionMeasurement, $transactionThreshold, $transactionCommitted->connectionName);
             $logger->debug('Database transaction commit time: '.$time.'ms connection: "'.$transactionCommitted->connectionName.'" pid: '.\getmypid());
             return;
