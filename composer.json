@@ -9,7 +9,7 @@
         "illuminate/log": "^8.0|^9.0",
         "illuminate/http": "^8.0|^9.0",
         "illuminate/events": "^8.0|^9.0",
-        "simple-as-fuck/php-validator": "^0.1.0|^0.2.0"
+        "simple-as-fuck/php-validator": "^0.1.0|^0.2.0|^0.3.0"
     },
     "require-dev": {
         "friendsofphp/php-cs-fixer": "^3.0",
