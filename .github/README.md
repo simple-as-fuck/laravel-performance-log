@@ -37,7 +37,7 @@ and put `PerformanceMiddleware` on **first position**.
 ### Sql
 
 If you know than some sql is slow, and you are fine with that you can overwrite `'performance_log.database.slow_query_threshold'`
-by setting temporary threshold in `PerformanceLogConfig`.
+by setting a temporary threshold in `PerformanceLogConfig`.
 
 ```php
 /** @var \SimpleAsFuck\LaravelPerformanceLog\Service\PerformanceLogConfig $config */
@@ -55,6 +55,22 @@ $threshold->restore();
 With group usage you can turn on measuring only on some routes or
 configure different thresholds on different route by [middleware parameter](https://laravel.com/docs/middleware#middleware-parameters)
 `threshold` float value in milliseconds, middleware parameter overwrite `'performance_log.http.slow_request_threshold'` config value.
+
+If you know that some concrete controller action is slow or should be extra fast,
+you can overwrite `'performance_log.http.slow_request_threshold'` by setting a temporary threshold,
+this threshold also overwrites middleware threshold parameter.
+The temporary threshold can be set only once per request and live until request ends.
+
+```php
+/** @var \SimpleAsFuck\LaravelPerformanceLog\Service\PerformanceLogConfig $config */
+$config = app()->make(\SimpleAsFuck\LaravelPerformanceLog\Service\PerformanceLogConfig::class);
+
+$config->setSlowRequestThreshold(null);
+
+// run some extra slow logic without annoying performance log
+
+// no need for threshold restoring, performance middleware will handle it
+```
 
 ## Usage with monitoring
 

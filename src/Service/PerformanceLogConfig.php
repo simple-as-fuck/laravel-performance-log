@@ -13,6 +13,7 @@ class PerformanceLogConfig
     private Repository $config;
     /** @var \WeakReference<TemporaryThreshold>|null  */
     private ?\WeakReference $temporarySqlQueryThreshold;
+    private ?TemporaryThreshold $temporaryRequestThreshold;
 
     public function __construct(Repository $config)
     {
@@ -34,6 +35,23 @@ class PerformanceLogConfig
     }
 
     /**
+     * @return float|null threshold value in milliseconds
+     */
+    public function getSlowRequestThreshold(): ?float
+    {
+        if ($this->temporaryRequestThreshold !== null) {
+            return $this->temporaryRequestThreshold->getValue();
+        }
+
+        return Validator::make($this->config->get('performance_log.http.slow_request_threshold'))->float()->min(0)->nullable();
+    }
+
+    public function isSlowRequestThresholdTemporary(): bool
+    {
+        return $this->temporaryRequestThreshold !== null;
+    }
+
+    /**
      * @param float|null $threshold threshold value in milliseconds
      */
     public function setSlowSqlQueryThreshold(?float $threshold): TemporaryThreshold
@@ -47,6 +65,21 @@ class PerformanceLogConfig
         $this->temporarySqlQueryThreshold = \WeakReference::create($temporaryThreshold);
 
         return $temporaryThreshold;
+    }
+
+    /**
+     * @param float|null $threshold value in milliseconds
+     */
+    public function setSlowRequestThreshold(?float $threshold): void
+    {
+        if ($this->temporaryRequestThreshold === null) {
+            $this->temporaryRequestThreshold = new TemporaryThreshold($threshold, null);
+        }
+    }
+
+    public function restoreSlowRequestThreshold(): void
+    {
+        $this->temporaryRequestThreshold = null;
     }
 
     /**

@@ -31,7 +31,7 @@ class PackageProvider extends ServiceProvider
 
         /** @var DatabaseManager $databaseManager */
         $databaseManager = $this->app->make(DatabaseManager::class);
-        $databaseDispatcher = $databaseManager->getEventDispatcher();
+        $databaseDispatcher = $databaseManager->connection()->getEventDispatcher();
         $databaseListener = $this->app->make(DatabaseListener::class);
 
         $databaseDispatcher->listen(QueryExecuted::class, [$databaseListener, 'onSqlQuery']);
