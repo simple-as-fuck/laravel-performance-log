@@ -4,11 +4,15 @@ declare(strict_types=1);
 
 namespace SimpleAsFuck\LaravelPerformanceLog\Provider;
 
+use Illuminate\Console\Events\CommandFinished;
+use Illuminate\Console\Events\CommandStarting;
 use Illuminate\Database\DatabaseManager;
 use Illuminate\Database\Events\QueryExecuted;
 use Illuminate\Database\Events\TransactionBeginning;
 use Illuminate\Database\Events\TransactionCommitted;
+use Illuminate\Events\Dispatcher;
 use Illuminate\Support\ServiceProvider;
+use SimpleAsFuck\LaravelPerformanceLog\Listener\ConsoleListener;
 use SimpleAsFuck\LaravelPerformanceLog\Listener\DatabaseListener;
 use SimpleAsFuck\LaravelPerformanceLog\Service\PerformanceLogConfig;
 
@@ -18,6 +22,7 @@ class PackageProvider extends ServiceProvider
     {
         $this->app->singleton(PerformanceLogConfig::class);
         $this->app->singleton(DatabaseListener::class);
+        $this->app->singleton(ConsoleListener::class);
     }
 
     public function boot(): void
@@ -37,5 +42,12 @@ class PackageProvider extends ServiceProvider
         $databaseDispatcher->listen(QueryExecuted::class, [$databaseListener, 'onSqlQuery']);
         $databaseDispatcher->listen(TransactionBeginning::class, [$databaseListener, 'onTransactionBegin']);
         $databaseDispatcher->listen(TransactionCommitted::class, [$databaseListener, 'onTransactionCommit']);
+
+        /** @var Dispatcher $dispatcher */
+        $dispatcher = $this->app->make(Dispatcher::class);
+        $consoleListener = $this->app->make(ConsoleListener::class);
+
+        $dispatcher->listen(CommandStarting::class, [$consoleListener, 'onCommandStart']);
+        $dispatcher->listen(CommandFinished::class, [$consoleListener, 'onCommandFinish']);
     }
 }

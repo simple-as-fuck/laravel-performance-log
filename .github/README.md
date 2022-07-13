@@ -67,6 +67,20 @@ $config->setSlowRequestThreshold(null);
 // no need for threshold restoring, performance middleware will handle it
 ```
 
+### Console
+
+If you want to overwrite `'performance_log.console.slow_command_threshold'`, you can do it by setting a temporary threshold.
+The temporary threshold can be set only once per command run and live until command ends.
+
+```php
+/** @var \SimpleAsFuck\LaravelPerformanceLog\Service\PerformanceLogConfig $config */
+$config = app()->make(\SimpleAsFuck\LaravelPerformanceLog\Service\PerformanceLogConfig::class);
+
+$config->setSlowCommandThreshold(60); // one minute
+
+// no need for threshold restoring, performance listener will handle it
+```
+
 ## Usage with monitoring
 
 Is recommended send performance warning logs into your monitoring system, so you know what is slow.

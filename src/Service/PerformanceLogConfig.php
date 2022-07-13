@@ -7,6 +7,7 @@ namespace SimpleAsFuck\LaravelPerformanceLog\Service;
 use Illuminate\Contracts\Config\Repository;
 use SimpleAsFuck\LaravelPerformanceLog\Model\TemporaryThreshold;
 use SimpleAsFuck\Validator\Factory\Validator;
+use SimpleAsFuck\Validator\Rule\General\Rules;
 
 class PerformanceLogConfig
 {
@@ -14,11 +15,13 @@ class PerformanceLogConfig
     /** @var \WeakReference<TemporaryThreshold>|null  */
     private ?\WeakReference $temporarySqlQueryThreshold;
     private ?TemporaryThreshold $temporaryRequestThreshold;
+    private ?TemporaryThreshold $temporaryCommandThreshold;
 
     public function __construct(Repository $config)
     {
         $this->config = $config;
         $this->temporarySqlQueryThreshold = null;
+        $this->temporaryCommandThreshold = null;
     }
 
     /**
@@ -31,7 +34,7 @@ class PerformanceLogConfig
             return $temporaryThreshold->getValue();
         }
 
-        return Validator::make($this->config->get('performance_log.database.slow_query_threshold'))->float()->min(0)->nullable();
+        return $this->getConfigValue('performance_log.database.slow_query_threshold')->float()->min(0)->nullable();
     }
 
     /**
@@ -43,7 +46,34 @@ class PerformanceLogConfig
             return $this->temporaryRequestThreshold->getValue();
         }
 
-        return Validator::make($this->config->get('performance_log.http.slow_request_threshold'))->float()->min(0)->nullable();
+        return $this->getConfigValue('performance_log.http.slow_request_threshold')->float()->min(0)->nullable();
+    }
+
+    /**
+     * @return float|null threshold value in seconds
+     */
+    public function getSlowCommandThreshold(): ?float
+    {
+        if ($this->temporaryCommandThreshold !== null) {
+            return $this->temporaryCommandThreshold->getValue();
+        }
+
+        return $this->getConfigValue('performance_log.console.slow_command_threshold')->float()->min(0)->nullable();
+    }
+
+    /**
+     * @param float|null $threshold threshold value in seconds
+     */
+    public function setSlowCommandThreshold(?float $threshold): void
+    {
+        if ($this->temporaryCommandThreshold === null) {
+            $this->temporaryCommandThreshold = new TemporaryThreshold($threshold, null);
+        }
+    }
+
+    public function restoreSlowCommandThreshold(): void
+    {
+        $this->temporaryCommandThreshold = null;
     }
 
     public function isSlowRequestThresholdTemporary(): bool
@@ -98,5 +128,13 @@ class PerformanceLogConfig
         }
 
         return $threshold;
+    }
+
+    /**
+     * @param non-empty-string $key
+     */
+    private function getConfigValue(string $key): Rules
+    {
+        return Validator::make($this->config->get($key), 'Config key: '.$key);
     }
 }

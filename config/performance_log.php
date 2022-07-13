@@ -21,4 +21,10 @@ return [
         // define threshold for whole http request
         'slow_request_threshold' => 1000,
     ],
+    'console' => [
+        // define threshold for whole console command
+        // the command threshold has the same behavior as another threshold
+        // but has different units, is configured in seconds!
+        'slow_command_threshold' => null,
+    ],
 ];
