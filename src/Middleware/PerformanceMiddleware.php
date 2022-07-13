@@ -33,6 +33,8 @@ final class PerformanceMiddleware
     }
 
     /**
+     * @deprecated $threshold parameter will be removed in the next version
+     *
      * @param Request $request
      * @param float|null $threshold value in milliseconds
      * @return Response

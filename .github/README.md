@@ -52,13 +52,8 @@ $threshold->restore();
 
 ### Http
 
-With group usage you can turn on measuring only on some routes or
-configure different thresholds on different route by [middleware parameter](https://laravel.com/docs/middleware#middleware-parameters)
-`threshold` float value in milliseconds, middleware parameter overwrite `'performance_log.http.slow_request_threshold'` config value.
-
 If you know that some concrete controller action is slow or should be extra fast,
-you can overwrite `'performance_log.http.slow_request_threshold'` by setting a temporary threshold,
-this threshold also overwrites middleware threshold parameter.
+you can overwrite `'performance_log.http.slow_request_threshold'` by setting a temporary threshold.
 The temporary threshold can be set only once per request and live until request ends.
 
 ```php
