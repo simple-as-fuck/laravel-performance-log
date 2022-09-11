@@ -15,7 +15,8 @@
     "require-dev": {
         "friendsofphp/php-cs-fixer": "^3.0",
         "phpstan/phpstan": "^1.2",
-        "phpstan/phpstan-strict-rules": "^1.1"
+        "phpstan/phpstan-strict-rules": "^1.1",
+        "phpstan/phpstan-deprecation-rules": "^1.0"
     },
     "suggest": {
         "sentry/sentry-laravel": "Allows receive logs with performance warning and make statistic on them, send notification, ..."
