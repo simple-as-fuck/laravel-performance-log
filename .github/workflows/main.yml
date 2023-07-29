@@ -3,7 +3,7 @@ name: CI
 on:
   push:
     branches:
-      - "*"
+      - "**"
 
 jobs:
   php82:
@@ -14,11 +14,17 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
+      - name: Install tools
+        run: phive install --trust-gpg-keys E82B2FB314E9906E,51C67305FFC2E5C0
+
       - name: Install dependencies
         run: composer install --no-interaction
 
+      - name: Chesk code style
+        run: tools/php-cs-fixer fix --dry-run --no-interaction
+
       - name: Run static analysis
-        run: vendor/bin/phpstan analyse
+        run: tools/phpstan analyse
 
   php80:
     name: "php 8.0"
@@ -100,9 +106,6 @@ jobs:
 
       - name: Install dependencies
         run: composer install --no-interaction
-
-      - name: Chesk code style
-        run: vendor/bin/php-cs-fixer fix --dry-run --no-interaction
 
       - name: Run static analysis
         run: vendor/bin/phpstan analyse
