@@ -37,17 +37,19 @@ and put `PerformanceMiddleware` on **first position**.
 ### Sql
 
 If you know than some sql is slow, and you are fine with that you can overwrite `'performance_log.database.slow_query_threshold'`
-by setting a temporary threshold in `PerformanceLogConfig`.
+or `'performance_log.database.slow_transaction_threshold'` by setting a temporary threshold in `PerformanceLogConfig`.
 
 ```php
 /** @var \SimpleAsFuck\LaravelPerformanceLog\Service\PerformanceLogConfig $config */
 $config = app()->make(\SimpleAsFuck\LaravelPerformanceLog\Service\PerformanceLogConfig::class);
 
-$threshold = $config->setSlowSqlQueryThreshold(null);
+$sqlThreshold = $config->setSlowSqlQueryThreshold(null);
+$transactionThreshold = $config->setSlowDbTransactionThreshold(null);
 
 // run some slow queries without annoying performance log
 
-$threshold->restore();
+$sqlThreshold->restore();
+$transactionThreshold->restore();
 ```
 
 ### Http

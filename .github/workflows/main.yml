@@ -24,7 +24,7 @@ jobs:
         run: tools/php-cs-fixer fix --dry-run --no-interaction
 
       - name: Run static analysis
-        run: tools/phpstan analyse
+        run: vendor/bin/phpstan analyse
 
   php80:
     name: "php 8.0"

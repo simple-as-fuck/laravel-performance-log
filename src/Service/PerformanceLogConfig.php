@@ -14,6 +14,8 @@ class PerformanceLogConfig
     private Repository $config;
     /** @var \WeakReference<TemporaryThreshold>|null  */
     private ?\WeakReference $temporarySqlQueryThreshold;
+    /** @var \WeakReference<TemporaryThreshold>|null */
+    private ?\WeakReference $temporaryDbTransactionThreshold;
     private ?TemporaryThreshold $temporaryRequestThreshold;
     private ?TemporaryThreshold $temporaryCommandThreshold;
 
@@ -21,6 +23,8 @@ class PerformanceLogConfig
     {
         $this->config = $config;
         $this->temporarySqlQueryThreshold = null;
+        $this->temporaryDbTransactionThreshold = null;
+        $this->temporaryRequestThreshold = null;
         $this->temporaryCommandThreshold = null;
     }
 
@@ -29,12 +33,23 @@ class PerformanceLogConfig
      */
     public function getSlowSqlQueryThreshold(): ?float
     {
-        $temporaryThreshold = self::getTemporaryThreshold($this->temporarySqlQueryThreshold);
-        if ($temporaryThreshold !== null) {
-            return $temporaryThreshold->getValue();
-        }
+        return self::getTemporaryThreshold($this->temporarySqlQueryThreshold)
+            ?->getValue()
+            ??
+            $this->getConfigValue('performance_log.database.slow_query_threshold')->float()->min(0)->nullable()
+        ;
+    }
 
-        return $this->getConfigValue('performance_log.database.slow_query_threshold')->float()->min(0)->nullable();
+    /**
+     * @return float|null threshold value in milliseconds
+     */
+    public function getSlowDbTransactionThreshold(): ?float
+    {
+        return self::getTemporaryThreshold($this->temporaryDbTransactionThreshold)
+            ?->getValue()
+            ??
+            $this->getConfigValue('performance_log.database.slow_transaction_threshold')->float()->min(0)->nullable()
+        ;
     }
 
     /**
@@ -93,6 +108,22 @@ class PerformanceLogConfig
 
         $temporaryThreshold = new TemporaryThreshold($threshold, $this->getSlowSqlQueryThreshold());
         $this->temporarySqlQueryThreshold = \WeakReference::create($temporaryThreshold);
+
+        return $temporaryThreshold;
+    }
+
+    /**
+     * @param float|null $threshold threshold value in milliseconds
+     */
+    public function setSlowDbTransactionThreshold(?float $threshold): TemporaryThreshold
+    {
+        $temporaryThreshold = self::getTemporaryThreshold($this->temporaryDbTransactionThreshold);
+        if ($temporaryThreshold !== null) {
+            return new TemporaryThreshold($threshold, $temporaryThreshold->getValue());
+        }
+
+        $temporaryThreshold = new TemporaryThreshold($threshold, $this->getSlowDbTransactionThreshold());
+        $this->temporaryDbTransactionThreshold = \WeakReference::create($temporaryThreshold);
 
         return $temporaryThreshold;
     }

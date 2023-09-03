@@ -58,7 +58,7 @@ class DatabaseListener
             return;
         }
 
-        $transactionThreshold = $this->config->get('performance_log.database.slow_transaction_threshold');
+        $transactionThreshold = $this->performanceLogConfig->getSlowDbTransactionThreshold();
         if ($transactionThreshold === null) {
             return;
         }
@@ -77,7 +77,7 @@ class DatabaseListener
             return;
         }
 
-        $transactionThreshold = Validator::make($this->config->get('performance_log.database.slow_transaction_threshold'))->float()->min(0)->nullable();
+        $transactionThreshold = $this->performanceLogConfig->getSlowDbTransactionThreshold();
         if ($transactionThreshold === null) {
             return;
         }
