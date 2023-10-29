@@ -27,4 +27,8 @@ return [
         // but has different units, is configured in seconds!
         'slow_command_threshold' => null,
     ],
+    'queue' => [
+        // define threshold for queue job
+        'slow_job_threshold' => null,
+    ],
 ];

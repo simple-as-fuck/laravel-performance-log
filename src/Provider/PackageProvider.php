@@ -11,9 +11,12 @@ use Illuminate\Database\Events\QueryExecuted;
 use Illuminate\Database\Events\TransactionBeginning;
 use Illuminate\Database\Events\TransactionCommitted;
 use Illuminate\Events\Dispatcher;
+use Illuminate\Queue\Events\JobProcessed;
+use Illuminate\Queue\Events\JobProcessing;
 use Illuminate\Support\ServiceProvider;
 use SimpleAsFuck\LaravelPerformanceLog\Listener\ConsoleListener;
 use SimpleAsFuck\LaravelPerformanceLog\Listener\DatabaseListener;
+use SimpleAsFuck\LaravelPerformanceLog\Listener\QueueListener;
 use SimpleAsFuck\LaravelPerformanceLog\Service\PerformanceLogConfig;
 
 class PackageProvider extends ServiceProvider
@@ -23,6 +26,7 @@ class PackageProvider extends ServiceProvider
         $this->app->singleton(PerformanceLogConfig::class);
         $this->app->singleton(DatabaseListener::class);
         $this->app->singleton(ConsoleListener::class);
+        $this->app->singleton(QueueListener::class);
     }
 
     public function boot(): void
@@ -49,5 +53,9 @@ class PackageProvider extends ServiceProvider
 
         $dispatcher->listen(CommandStarting::class, [$consoleListener, 'onCommandStart']);
         $dispatcher->listen(CommandFinished::class, [$consoleListener, 'onCommandFinish']);
+
+        $queueListener = $this->app->make(QueueListener::class);
+        $dispatcher->listen(JobProcessing::class, [$queueListener, 'onJobStart']);
+        $dispatcher->listen(JobProcessed::class, [$queueListener, 'onJobFinish']);
     }
 }

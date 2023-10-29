@@ -11,21 +11,27 @@ use SimpleAsFuck\Validator\Rule\General\Rules;
 
 class PerformanceLogConfig
 {
-    private Repository $config;
-    /** @var \WeakReference<TemporaryThreshold>|null  */
-    private ?\WeakReference $temporarySqlQueryThreshold;
     /** @var \WeakReference<TemporaryThreshold>|null */
-    private ?\WeakReference $temporaryDbTransactionThreshold;
-    private ?TemporaryThreshold $temporaryRequestThreshold;
-    private ?TemporaryThreshold $temporaryCommandThreshold;
+    private ?\WeakReference $temporarySqlQueryThreshold = null;
+    /** @var \WeakReference<TemporaryThreshold>|null */
+    private ?\WeakReference $temporaryDbTransactionThreshold = null;
+    private ?TemporaryThreshold $temporaryRequestThreshold = null;
+    private ?TemporaryThreshold $temporaryCommandThreshold = null;
+    private ?TemporaryThreshold $temporaryJobThreshold = null;
 
-    public function __construct(Repository $config)
+    public function __construct(
+        private Repository $config,
+    ) {
+    }
+
+    public function isDebugEnabled(): bool
     {
-        $this->config = $config;
-        $this->temporarySqlQueryThreshold = null;
-        $this->temporaryDbTransactionThreshold = null;
-        $this->temporaryRequestThreshold = null;
-        $this->temporaryCommandThreshold = null;
+        return $this->getConfigValue('app.debug')->bool()->notNull();
+    }
+
+    public function getLogChannelName(): ?string
+    {
+        return $this->getConfigValue('performance_log.log_channel')->string()->nullable();
     }
 
     /**
@@ -77,6 +83,18 @@ class PerformanceLogConfig
     }
 
     /**
+     * @return float|null threshold value in milliseconds
+     */
+    public function getSlowJobThreshold(): ?float
+    {
+        if ($this->temporaryJobThreshold !== null) {
+            return $this->temporaryJobThreshold->getValue();
+        }
+
+        return $this->getConfigValue('performance_log.queue.slow_job_threshold')->float()->min(0)->nullable();
+    }
+
+    /**
      * @param float|null $threshold threshold value in seconds
      */
     public function setSlowCommandThreshold(?float $threshold): void
@@ -91,6 +109,9 @@ class PerformanceLogConfig
         $this->temporaryCommandThreshold = null;
     }
 
+    /**
+     * @deprecated will be removed
+     */
     public function isSlowRequestThresholdTemporary(): bool
     {
         return $this->temporaryRequestThreshold !== null;
@@ -138,9 +159,22 @@ class PerformanceLogConfig
         }
     }
 
+    /**
+     * @param float|null $threshold value in milliseconds
+     */
+    public function setSlowJobThreshold(?float $threshold): void
+    {
+        $this->temporaryJobThreshold = new TemporaryThreshold($threshold, null);
+    }
+
     public function restoreSlowRequestThreshold(): void
     {
         $this->temporaryRequestThreshold = null;
+    }
+
+    public function restoreSlowJobThreshold(): void
+    {
+        $this->temporaryJobThreshold = null;
     }
 
     /**

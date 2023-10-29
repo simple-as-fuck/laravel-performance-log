@@ -83,6 +83,20 @@ $config->setSlowCommandThreshold(60); // one minute
 // no need for threshold restoring, performance listener will handle it
 ```
 
+### Job
+
+If you want to overwrite `'performance_log.queue.slow_job_threshold'`, you can set a temporary threshold.
+The temporary threshold can be set anywhere in job run and live until a job ends.
+
+```php
+/** @var \SimpleAsFuck\LaravelPerformanceLog\Service\PerformanceLogConfig $config */
+$config = app()->make(\SimpleAsFuck\LaravelPerformanceLog\Service\PerformanceLogConfig::class);
+
+$config->setSlowJobThreshold(10000); // 10 seconds
+
+// no need for threshold restoring, performance listener will handle it
+```
+
 ## Usage with monitoring
 
 Is recommended send performance warning logs into your monitoring system, so you know what is slow.

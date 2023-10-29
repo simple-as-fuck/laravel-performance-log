@@ -4,53 +4,34 @@ declare(strict_types=1);
 
 namespace SimpleAsFuck\LaravelPerformanceLog\Middleware;
 
-use Illuminate\Contracts\Config\Repository;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Log\LogManager;
 use SimpleAsFuck\LaravelPerformanceLog\Model\Measurement;
 use SimpleAsFuck\LaravelPerformanceLog\Service\PerformanceLogConfig;
 use SimpleAsFuck\LaravelPerformanceLog\Service\Stopwatch;
-use SimpleAsFuck\Validator\Factory\Validator;
 
 final class PerformanceMiddleware
 {
-    private Stopwatch $stopwatch;
-    private Repository $config;
-    private LogManager $logManager;
-    private PerformanceLogConfig $performanceLogConfig;
-
     public function __construct(
-        Stopwatch $stopwatch,
-        Repository $config,
-        LogManager $logManager,
-        PerformanceLogConfig $performanceLogConfig
+        private Stopwatch $stopwatch,
+        private LogManager $logManager,
+        private PerformanceLogConfig $performanceLogConfig
     ) {
-        $this->stopwatch = $stopwatch;
-        $this->config = $config;
-        $this->logManager = $logManager;
-        $this->performanceLogConfig = $performanceLogConfig;
     }
 
     /**
-     * @deprecated $threshold parameter will be removed in the next version
-     *
      * @param Request $request
-     * @param float|null $threshold value in milliseconds
      * @return Response
      */
-    public function handle($request, \Closure $next, float $threshold = null)
+    public function handle($request, \Closure $next)
     {
         $measurement = $this->stopwatch->startMeasurement();
         $this->performanceLogConfig->restoreSlowRequestThreshold();
 
         $response = $next($request);
 
-        if ($this->performanceLogConfig->isSlowRequestThresholdTemporary()) {
-            $threshold = $this->performanceLogConfig->getSlowRequestThreshold();
-        } else {
-            $threshold ??= $this->performanceLogConfig->getSlowRequestThreshold();
-        }
+        $threshold = $this->performanceLogConfig->getSlowRequestThreshold();
         $this->performanceLogConfig->restoreSlowRequestThreshold();
 
         $this->log($measurement, $request, $threshold);
@@ -66,9 +47,9 @@ final class PerformanceMiddleware
             return;
         }
 
-        $logger = $this->logManager->channel(Validator::make($this->config->get('performance_log.log_channel'))->string()->nullable());
+        $logger = $this->logManager->channel($this->performanceLogConfig->getLogChannelName());
 
-        if ($threshold === 0.0 && Validator::make($this->config->get('app.debug'))->bool()->notNull()) {
+        if ($threshold === 0.0 && $this->performanceLogConfig->isDebugEnabled()) {
             $time = $this->stopwatch->check($measurement, $threshold);
             $logger->debug('Http request time: '.$time.'ms method: "'.$request->method().'" url: "'.$request->fullUrl().'" pid: '.\getmypid());
             return;
