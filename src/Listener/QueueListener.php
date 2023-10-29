@@ -26,7 +26,10 @@ class QueueListener
     public function onJobStart(JobProcessing $jobProcessing): void
     {
         $this->performanceLogConfig->restoreSlowJobThreshold();
-        $this->stopwatch->start($this->measurement, $jobProcessing->job->getJobId());
+
+        /** @var string|int $jobId */
+        $jobId = $jobProcessing->job->getJobId();
+        $this->stopwatch->start($this->measurement, (string) $jobId);
     }
 
     public function onJobFinish(JobProcessed $jobProcessed): void
@@ -38,18 +41,20 @@ class QueueListener
         }
 
         $logger = $this->logManager->channel($this->performanceLogConfig->getLogChannelName());
+        /** @var string|int $jobId */
+        $jobId = $jobProcessed->job->getJobId();
 
         if ($threshold === 0.0 && $this->performanceLogConfig->isDebugEnabled()) {
-            $time = $this->stopwatch->checkPrefix($this->measurement, $threshold, $jobProcessed->job->getJobId());
-            $logger->debug('Queue job time: ' . $time . 'ms class: "' . $jobProcessed->job::class . '" pid: ' . \getmypid());
+            $time = $this->stopwatch->checkPrefix($this->measurement, $threshold, (string) $jobId);
+            $logger->debug('Queue job time: ' . $time . 'ms job name: "' . $jobProcessed->job->resolveName() . '" pid: ' . \getmypid());
             return;
         }
 
         $this->stopwatch->checkPrefix(
             $this->measurement,
             $threshold,
-            $jobProcessed->job->getJobId(),
-            static fn (float $time) => $logger->warning('Queue job is too slow: ' . $time . 'ms class: "' . $jobProcessed->job::class . '" threshold: ' . $threshold . ' pid: ' . \getmypid())
+            (string) $jobId,
+            static fn (float $time) => $logger->warning('Queue job is too slow: ' . $time . 'ms job name: "' . $jobProcessed->job->resolveName() . '" threshold: ' . $threshold . 'ms pid: ' . \getmypid())
         );
     }
 }
