@@ -20,7 +20,7 @@ class PerformanceLogConfig
     private ?TemporaryThreshold $temporaryJobThreshold = null;
 
     public function __construct(
-        private Repository $config,
+        private readonly Repository $config,
     ) {
     }
 
