@@ -14,12 +14,12 @@ use SimpleAsFuck\LaravelPerformanceLog\Service\Stopwatch;
 
 class DatabaseListener
 {
-    private Measurement $transactionMeasurement;
+    private readonly Measurement $transactionMeasurement;
 
     public function __construct(
-        private LogManager $logManager,
-        private Stopwatch $stopwatch,
-        private PerformanceLogConfig $performanceLogConfig
+        private readonly LogManager $logManager,
+        private readonly Stopwatch $stopwatch,
+        private readonly PerformanceLogConfig $performanceLogConfig
     ) {
         $this->transactionMeasurement = new Measurement();
     }
@@ -80,7 +80,7 @@ class DatabaseListener
             return;
         }
 
-        if ($transactionThreshold == 0 && $this->performanceLogConfig->isDebugEnabled()) {
+        if ($transactionThreshold === 0.0 && $this->performanceLogConfig->isDebugEnabled()) {
             $time = $this->stopwatch->checkPrefix($this->transactionMeasurement, $transactionThreshold, $transactionCommitted->connectionName);
             $logger->debug('Database transaction commit time: '.$time.'ms connection: "'.$transactionCommitted->connectionName.'" pid: '.\getmypid());
             return;

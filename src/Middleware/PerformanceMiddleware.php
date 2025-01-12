@@ -14,14 +14,15 @@ use SimpleAsFuck\LaravelPerformanceLog\Service\Stopwatch;
 final class PerformanceMiddleware
 {
     public function __construct(
-        private Stopwatch $stopwatch,
-        private LogManager $logManager,
-        private PerformanceLogConfig $performanceLogConfig
+        private readonly Stopwatch $stopwatch,
+        private readonly LogManager $logManager,
+        private readonly PerformanceLogConfig $performanceLogConfig
     ) {
     }
 
     /**
      * @param Request $request
+     * @param \Closure(Request): Response $next
      * @return Response
      */
     public function handle($request, \Closure $next)

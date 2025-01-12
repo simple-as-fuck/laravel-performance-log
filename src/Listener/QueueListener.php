@@ -13,12 +13,12 @@ use SimpleAsFuck\LaravelPerformanceLog\Service\Stopwatch;
 
 class QueueListener
 {
-    private Measurement $measurement;
+    private readonly Measurement $measurement;
 
     public function __construct(
-        private PerformanceLogConfig $performanceLogConfig,
-        private Stopwatch $stopwatch,
-        private LogManager $logManager,
+        private readonly PerformanceLogConfig $performanceLogConfig,
+        private readonly Stopwatch $stopwatch,
+        private readonly LogManager $logManager,
     ) {
         $this->measurement = new Measurement();
     }
@@ -27,9 +27,8 @@ class QueueListener
     {
         $this->performanceLogConfig->restoreSlowJobThreshold();
 
-        /** @var string|int $jobId */
         $jobId = $jobProcessing->job->getJobId();
-        $this->stopwatch->start($this->measurement, (string) $jobId);
+        $this->stopwatch->start($this->measurement, $jobId);
     }
 
     public function onJobFinish(JobProcessed $jobProcessed): void
@@ -41,11 +40,10 @@ class QueueListener
         }
 
         $logger = $this->logManager->channel($this->performanceLogConfig->getLogChannelName());
-        /** @var string|int $jobId */
         $jobId = $jobProcessed->job->getJobId();
 
         if ($threshold === 0.0 && $this->performanceLogConfig->isDebugEnabled()) {
-            $time = $this->stopwatch->checkPrefix($this->measurement, $threshold, (string) $jobId);
+            $time = $this->stopwatch->checkPrefix($this->measurement, $threshold, $jobId);
             $logger->debug('Queue job time: ' . $time . 'ms job name: "' . $jobProcessed->job->resolveName() . '" pid: ' . \getmypid());
             return;
         }
@@ -53,7 +51,7 @@ class QueueListener
         $this->stopwatch->checkPrefix(
             $this->measurement,
             $threshold,
-            (string) $jobId,
+            $jobId,
             static fn (float $time) => $logger->warning('Queue job is too slow: ' . $time . 'ms job name: "' . $jobProcessed->job->resolveName() . '" threshold: ' . $threshold . 'ms pid: ' . \getmypid())
         );
     }
