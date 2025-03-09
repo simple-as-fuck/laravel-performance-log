@@ -1,6 +1,0 @@
-includes:
-    - phpstan.neon.dist
-
-parameters:
-    ignoreErrors:
-        - '#Call to deprecated method string\(\) of class SimpleAsFuck\\Validator\\Rule\\General\\Rules#'

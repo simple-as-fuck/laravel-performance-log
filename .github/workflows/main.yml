@@ -52,7 +52,7 @@ jobs:
         run: composer update --no-interaction --prefer-lowest --with simple-as-fuck/php-validator:^0.5.0 --with illuminate/contracts:^10.0
 
       - name: Run static analysis
-        run: vendor/bin/phpstan analyse --configuration=phpstan-validator-0.5.neon.dist
+        run: vendor/bin/phpstan analyse
 
   php82:
     name: "php 8.2"
