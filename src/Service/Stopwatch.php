@@ -25,7 +25,7 @@ class Stopwatch
      * @param callable|null $toSlowCallback what happened after slow finish
      * @return float measured time in milliseconds
      */
-    public function check(Measurement $measurement, float $threshold, callable $toSlowCallback = null): float
+    public function check(Measurement $measurement, float $threshold, ?callable $toSlowCallback = null): float
     {
         return $this->checkPrefix($measurement, $threshold, null, $toSlowCallback);
     }
@@ -35,7 +35,7 @@ class Stopwatch
      * @param callable|null $toSlowCallback what happened after slow finish
      * @return float measured time in milliseconds
      */
-    public function checkPrefix(Measurement $measurement, float $threshold, ?string $prefix, callable $toSlowCallback = null): float
+    public function checkPrefix(Measurement $measurement, float $threshold, ?string $prefix, ?callable $toSlowCallback = null): float
     {
         $time = $measurement->finish($prefix);
         if ($time >= $threshold) {
