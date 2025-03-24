@@ -6,6 +6,20 @@ on:
       - "**"
 
 jobs:
+  php84:
+    name: "php 8.4"
+    runs-on: ubuntu-latest
+    container: "nofutur3/php-tests:8.4"
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: composer update --no-interaction --prefer-lowest --with simple-as-fuck/php-validator:^0.7.0 --with illuminate/contracts:^12.0
+
+      - name: Run static analysis
+        run: vendor/bin/phpstan analyse
+
   php83:
     name: "php 8.3"
     runs-on: ubuntu-latest
@@ -18,7 +32,7 @@ jobs:
         run: phive install --trust-gpg-keys E82B2FB314E9906E
 
       - name: Install dependencies
-        run: composer update --no-interaction --prefer-lowest --with simple-as-fuck/php-validator:^0.7.0 --with illuminate/contracts:^12.0
+        run: composer update --no-interaction --prefer-lowest
 
       - name: Chesk code style
         run: tools/php-cs-fixer fix --dry-run --no-interaction
