@@ -27,7 +27,8 @@ class QueueListener
     {
         $this->performanceLogConfig->restoreSlowJobThreshold();
 
-        $jobId = $jobProcessing->job->getJobId();
+        /** @phpstan-ignore-next-line laravel developers are imbeciles in reality getJobId for now return int|string */
+        $jobId = (string) $jobProcessing->job->getJobId();
         $this->stopwatch->start($this->measurement, $jobId);
     }
 
@@ -40,7 +41,8 @@ class QueueListener
         }
 
         $logger = $this->logManager->channel($this->performanceLogConfig->getLogChannelName());
-        $jobId = $jobProcessed->job->getJobId();
+        /** @phpstan-ignore-next-line laravel developers are imbeciles in reality getJobId for now return int|string */
+        $jobId = (string) $jobProcessed->job->getJobId();
 
         if ($threshold === 0.0 && $this->performanceLogConfig->isDebugEnabled()) {
             $time = $this->stopwatch->checkPrefix($this->measurement, $threshold, $jobId);
