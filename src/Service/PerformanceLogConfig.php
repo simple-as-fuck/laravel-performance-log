@@ -5,194 +5,149 @@ declare(strict_types=1);
 namespace SimpleAsFuck\LaravelPerformanceLog\Service;
 
 use Illuminate\Contracts\Config\Repository;
-use SimpleAsFuck\LaravelPerformanceLog\Model\TemporaryThreshold;
+use SimpleAsFuck\PerformanceLog\Data\TemporaryThreshold;
 use SimpleAsFuck\Validator\Factory\Validator;
 use SimpleAsFuck\Validator\Rule\General\Rules;
 
+/**
+ * @deprecated use SimpleAsFuck\PerformanceLog\Service\PerformanceLogConfig from composer package: simple-as-fuck/php-performance-log
+ */
 class PerformanceLogConfig
 {
-    /** @var \WeakReference<TemporaryThreshold>|null */
-    private ?\WeakReference $temporarySqlQueryThreshold = null;
-    /** @var \WeakReference<TemporaryThreshold>|null */
-    private ?\WeakReference $temporaryDbTransactionThreshold = null;
-    private ?TemporaryThreshold $temporaryRequestThreshold = null;
-    private ?TemporaryThreshold $temporaryCommandThreshold = null;
-    private ?TemporaryThreshold $temporaryJobThreshold = null;
-
     public function __construct(
         private readonly Repository $config,
+        private readonly \SimpleAsFuck\PerformanceLog\Service\PerformanceLogConfig $performanceLogConfig,
     ) {
     }
 
+    /**
+     * @deprecated in composer package: simple-as-fuck/php-performance-log is removed
+     */
     public function isDebugEnabled(): bool
     {
         return $this->getConfigValue('app.debug')->bool()->notNull();
     }
 
+    /**
+     * @deprecated in composer package: simple-as-fuck/php-performance-log is removed
+     */
     public function getLogChannelName(): ?string
     {
         return $this->getConfigValue('performance_log.log_channel')->string()->nullable();
     }
 
     /**
+     * @deprecated use SimpleAsFuck\PerformanceLog\Service\PerformanceLogConfig from composer package: simple-as-fuck/php-performance-log
      * @return float|null threshold value in milliseconds
      */
     public function getSlowSqlQueryThreshold(): ?float
     {
-        return self::getTemporaryThreshold($this->temporarySqlQueryThreshold)
-            ?->getValue()
-            ??
-            $this->getConfigValue('performance_log.database.slow_query_threshold')->float()->min(0)->nullable()
-        ;
+        return $this->performanceLogConfig->getSlowSqlQueryThreshold();
     }
 
     /**
+     * @deprecated use SimpleAsFuck\PerformanceLog\Service\PerformanceLogConfig from composer package: simple-as-fuck/php-performance-log
      * @return float|null threshold value in milliseconds
      */
     public function getSlowDbTransactionThreshold(): ?float
     {
-        return self::getTemporaryThreshold($this->temporaryDbTransactionThreshold)
-            ?->getValue()
-            ??
-            $this->getConfigValue('performance_log.database.slow_transaction_threshold')->float()->min(0)->nullable()
-        ;
+        return $this->performanceLogConfig->getSlowDbTransactionThreshold();
     }
 
     /**
+     * @deprecated use SimpleAsFuck\PerformanceLog\Service\PerformanceLogConfig from composer package: simple-as-fuck/php-performance-log
      * @return float|null threshold value in milliseconds
      */
     public function getSlowRequestThreshold(): ?float
     {
-        if ($this->temporaryRequestThreshold !== null) {
-            return $this->temporaryRequestThreshold->getValue();
-        }
-
-        return $this->getConfigValue('performance_log.http.slow_request_threshold')->float()->min(0)->nullable();
+        return $this->performanceLogConfig->getSlowRequestThreshold();
     }
 
     /**
+     * @deprecated use SimpleAsFuck\PerformanceLog\Service\PerformanceLogConfig from composer package: simple-as-fuck/php-performance-log
      * @return float|null threshold value in seconds
      */
     public function getSlowCommandThreshold(): ?float
     {
-        if ($this->temporaryCommandThreshold !== null) {
-            return $this->temporaryCommandThreshold->getValue();
-        }
-
-        return $this->getConfigValue('performance_log.console.slow_command_threshold')->float()->min(0)->nullable();
+        return $this->performanceLogConfig->getSlowCommandThreshold();
     }
 
     /**
+     * @deprecated use SimpleAsFuck\PerformanceLog\Service\PerformanceLogConfig from composer package: simple-as-fuck/php-performance-log
      * @return float|null threshold value in milliseconds
      */
     public function getSlowJobThreshold(): ?float
     {
-        if ($this->temporaryJobThreshold !== null) {
-            return $this->temporaryJobThreshold->getValue();
-        }
-
-        return $this->getConfigValue('performance_log.queue.slow_job_threshold')->float()->min(0)->nullable();
+        return $this->performanceLogConfig->getSlowJobThreshold();
     }
 
     /**
+     * @deprecated use SimpleAsFuck\PerformanceLog\Service\PerformanceLogConfig from composer package: simple-as-fuck/php-performance-log
      * @param float|null $threshold threshold value in seconds
      */
     public function setSlowCommandThreshold(?float $threshold): void
     {
-        if ($this->temporaryCommandThreshold === null) {
-            $this->temporaryCommandThreshold = new TemporaryThreshold($threshold, null);
-        }
+        $this->performanceLogConfig->setSlowCommandThreshold($threshold);
     }
 
+    /**
+     * @deprecated use SimpleAsFuck\PerformanceLog\Service\PerformanceLogConfig from composer package: simple-as-fuck/php-performance-log
+     */
     public function restoreSlowCommandThreshold(): void
     {
-        $this->temporaryCommandThreshold = null;
+        $this->performanceLogConfig->restoreSlowCommandThreshold();
     }
 
     /**
-     * @deprecated will be removed
-     */
-    public function isSlowRequestThresholdTemporary(): bool
-    {
-        return $this->temporaryRequestThreshold !== null;
-    }
-
-    /**
+     * @deprecated use SimpleAsFuck\PerformanceLog\Service\PerformanceLogConfig from composer package: simple-as-fuck/php-performance-log
      * @param float|null $threshold threshold value in milliseconds
      */
     public function setSlowSqlQueryThreshold(?float $threshold): TemporaryThreshold
     {
-        $temporaryThreshold = self::getTemporaryThreshold($this->temporarySqlQueryThreshold);
-        if ($temporaryThreshold !== null) {
-            return new TemporaryThreshold($threshold, $temporaryThreshold->getValue());
-        }
-
-        $temporaryThreshold = new TemporaryThreshold($threshold, $this->getSlowSqlQueryThreshold());
-        $this->temporarySqlQueryThreshold = \WeakReference::create($temporaryThreshold);
-
-        return $temporaryThreshold;
+        return $this->performanceLogConfig->setSlowSqlQueryThreshold($threshold);
     }
 
     /**
+     * @deprecated use SimpleAsFuck\PerformanceLog\Service\PerformanceLogConfig from composer package: simple-as-fuck/php-performance-log
      * @param float|null $threshold threshold value in milliseconds
      */
     public function setSlowDbTransactionThreshold(?float $threshold): TemporaryThreshold
     {
-        $temporaryThreshold = self::getTemporaryThreshold($this->temporaryDbTransactionThreshold);
-        if ($temporaryThreshold !== null) {
-            return new TemporaryThreshold($threshold, $temporaryThreshold->getValue());
-        }
-
-        $temporaryThreshold = new TemporaryThreshold($threshold, $this->getSlowDbTransactionThreshold());
-        $this->temporaryDbTransactionThreshold = \WeakReference::create($temporaryThreshold);
-
-        return $temporaryThreshold;
+        return $this->performanceLogConfig->setSlowDbTransactionThreshold($threshold);
     }
 
     /**
+     * @deprecated use SimpleAsFuck\PerformanceLog\Service\PerformanceLogConfig from composer package: simple-as-fuck/php-performance-log
      * @param float|null $threshold value in milliseconds
      */
     public function setSlowRequestThreshold(?float $threshold): void
     {
-        if ($this->temporaryRequestThreshold === null) {
-            $this->temporaryRequestThreshold = new TemporaryThreshold($threshold, null);
-        }
+        $this->performanceLogConfig->setSlowRequestThreshold($threshold);
     }
 
     /**
+     * @deprecated use SimpleAsFuck\PerformanceLog\Service\PerformanceLogConfig from composer package: simple-as-fuck/php-performance-log
      * @param float|null $threshold value in milliseconds
      */
     public function setSlowJobThreshold(?float $threshold): void
     {
-        $this->temporaryJobThreshold = new TemporaryThreshold($threshold, null);
-    }
-
-    public function restoreSlowRequestThreshold(): void
-    {
-        $this->temporaryRequestThreshold = null;
-    }
-
-    public function restoreSlowJobThreshold(): void
-    {
-        $this->temporaryJobThreshold = null;
+        $this->performanceLogConfig->setSlowJobThreshold($threshold);
     }
 
     /**
-     * @param \WeakReference<TemporaryThreshold>|null $weakReference
+     * @deprecated use SimpleAsFuck\PerformanceLog\Service\PerformanceLogConfig from composer package: simple-as-fuck/php-performance-log
      */
-    private static function getTemporaryThreshold(?\WeakReference &$weakReference): ?TemporaryThreshold
+    public function restoreSlowRequestThreshold(): void
     {
-        if ($weakReference === null) {
-            return null;
-        }
+        $this->performanceLogConfig->restoreSlowRequestThreshold();
+    }
 
-        $threshold = $weakReference->get();
-        if ($threshold === null || $threshold->isRestored()) {
-            $weakReference = null;
-            return null;
-        }
-
-        return $threshold;
+    /**
+     * @deprecated use SimpleAsFuck\PerformanceLog\Service\PerformanceLogConfig from composer package: simple-as-fuck/php-performance-log
+     */
+    public function restoreSlowJobThreshold(): void
+    {
+        $this->performanceLogConfig->restoreSlowJobThreshold();
     }
 
     /**

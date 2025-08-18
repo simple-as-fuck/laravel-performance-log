@@ -2,6 +2,10 @@
 
 declare(strict_types=1);
 
+/**
+ * @deprecated use composer package: simple-as-fuck/php-performance-log
+ */
+
 return [
     // configure name of log channel defined in config/logging.php used for logging
     // with null value default log channel will be used

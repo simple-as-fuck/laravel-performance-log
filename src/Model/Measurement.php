@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace SimpleAsFuck\LaravelPerformanceLog\Model;
 
+/**
+ * @deprecated use composer package: simple-as-fuck/php-performance-log
+ */
 final class Measurement
 {
     /** @var array<string, float> */

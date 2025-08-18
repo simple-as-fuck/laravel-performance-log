@@ -6,6 +6,9 @@ namespace SimpleAsFuck\LaravelPerformanceLog\Service;
 
 use SimpleAsFuck\LaravelPerformanceLog\Model\Measurement;
 
+/**
+ * @deprecated use composer package: simple-as-fuck/php-performance-log
+ */
 class Stopwatch
 {
     public function startMeasurement(?string $prefix = null): Measurement
