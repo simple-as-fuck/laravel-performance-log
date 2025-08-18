@@ -82,10 +82,10 @@ jobs:
       - name: Run static analysis
         run: vendor/bin/phpstan analyse
 
-  php81b:
-    name: "php 8.1, validator 0.2"
+  php82b:
+    name: "php 8.2, validator 0.2"
     runs-on: ubuntu-latest
-    container: "nofutur3/php-tests:8.1"
+    container: "nofutur3/php-tests:8.2"
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
@@ -96,10 +96,10 @@ jobs:
       - name: Run static analysis
         run: vendor/bin/phpstan analyse
 
-  php81d:
-    name: "php 8.1, validator 0.4, laravel 9.0"
+  php82d:
+    name: "php 8.2, validator 0.4, laravel 9.0"
     runs-on: ubuntu-latest
-    container: "nofutur3/php-tests:8.1"
+    container: "nofutur3/php-tests:8.2"
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
@@ -110,10 +110,10 @@ jobs:
       - name: Run static analysis
         run: vendor/bin/phpstan analyse
 
-  php81c:
-    name: "php 8.1, validator 0.3"
+  php82c:
+    name: "php 8.2, validator 0.3"
     runs-on: ubuntu-latest
-    container: "nofutur3/php-tests:8.1"
+    container: "nofutur3/php-tests:8.2"
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
@@ -124,30 +124,16 @@ jobs:
       - name: Run static analysis
         run: vendor/bin/phpstan analyse
 
-  php81a:
-    name: "php 8.1, validator 0.1 and laravel 8.0"
+  php82a:
+    name: "php 8.2, validator 0.1 and laravel 8.0"
     runs-on: ubuntu-latest
-    container: "nofutur3/php-tests:8.1"
+    container: "nofutur3/php-tests:8.2"
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
 
       - name: Install dependencies
         run: composer update --no-interaction --prefer-lowest --with simple-as-fuck/php-validator:^0.1.0 --with illuminate/contracts:^8.0
-
-      - name: Run static analysis
-        run: vendor/bin/phpstan analyse
-
-  php81:
-    name: "php 8.1"
-    runs-on: ubuntu-latest
-    container: "nofutur3/php-tests:8.1"
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
-
-      - name: Install dependencies
-        run: composer update --no-interaction --prefer-lowest
 
       - name: Run static analysis
         run: vendor/bin/phpstan analyse
