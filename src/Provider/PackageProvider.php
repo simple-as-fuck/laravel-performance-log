@@ -11,6 +11,7 @@ use Illuminate\Database\Events\QueryExecuted;
 use Illuminate\Database\Events\TransactionBeginning;
 use Illuminate\Database\Events\TransactionCommitted;
 use Illuminate\Events\Dispatcher;
+use Illuminate\Queue\Events\JobFailed;
 use Illuminate\Queue\Events\JobProcessed;
 use Illuminate\Queue\Events\JobProcessing;
 use Illuminate\Support\ServiceProvider;
@@ -56,6 +57,7 @@ class PackageProvider extends ServiceProvider
 
         $queueListener = $this->app->make(QueueListener::class);
         $dispatcher->listen(JobProcessing::class, [$queueListener, 'onJobStart']);
+        $dispatcher->listen(JobFailed::class, static fn (JobFailed $event) => $queueListener->onJobFinish(new JobProcessed($event->connectionName, $event->job)));
         $dispatcher->listen(JobProcessed::class, [$queueListener, 'onJobFinish']);
     }
 }
