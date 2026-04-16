@@ -55,6 +55,7 @@ class PackageProvider extends ServiceProvider
         $dispatcher->listen(CommandStarting::class, [$consoleListener, 'onCommandStart']);
         $dispatcher->listen(CommandFinished::class, [$consoleListener, 'onCommandFinish']);
 
+        /** @var QueueListener $queueListener */
         $queueListener = $this->app->make(QueueListener::class);
         $dispatcher->listen(JobProcessing::class, [$queueListener, 'onJobStart']);
         $dispatcher->listen(JobFailed::class, static fn (JobFailed $event) => $queueListener->onJobFinish(new JobProcessed($event->connectionName, $event->job)));
