@@ -19,11 +19,13 @@ class QueueListener
 
     public function onJobStart(JobProcessing $jobProcessing): void
     {
-        $this->queueListener->onJobStart($jobProcessing->job->getJobId());
+        /** @phpstan-ignore-next-line cast.useless */
+        $this->queueListener->onJobStart($jobProcessing->job->resolveName() . '-' . ((string) $jobProcessing->job->getJobId()));
     }
 
     public function onJobFinish(JobProcessed $jobProcessed): void
     {
-        $this->queueListener->onJobFinish($jobProcessed->job->resolveName(), $jobProcessed->job->getJobId());
+        /** @phpstan-ignore-next-line cast.useless */
+        $this->queueListener->onJobFinish($jobProcessed->job->resolveName(), $jobProcessed->job->resolveName() . '-' . ((string) $jobProcessed->job->getJobId()));
     }
 }
